@@ -121,12 +121,18 @@ public class Controller2 : MonoBehaviour
         brus.Kdinamic = float.Parse(canvas.gs_kd_input);
         brus.Kstatic = float.Parse(canvas.gs_ks_input);
         brus.mass = float.Parse(canvas.gs_mass_input);
+
         brus.fsum = Vector3.zero;
+        dinam.ShowForce(0);
     }
     public void reset()
     {
         started = false;
-        state = 0;
+        state = -1;
+        dinam.ShowForce(0);
+        brus.fsum = Vector3.zero;
+        brus.ToDef();
+        dinam.ToDef();
     }
     GameObject GetRaycastObj()
     {

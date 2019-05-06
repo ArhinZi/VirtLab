@@ -42,14 +42,14 @@ public class Brus : MonoBehaviour
         Fdinamic = mass * 9.8f * Kdinamic;
         if (state == 2 && !stop)
         {
-            Debug.Log("Vel:"+ rb.velocity.x);
+            //Debug.Log("Vel:"+ rb.velocity.x);
             if (Mathf.Abs(rb.velocity.x) < 0.1)
             {
                 if (Mathf.Abs(fsum.x) <= Fstatic)
                 {
                     Vector3 f = new Vector3((fsum.x ) * -1,0,0);
                     gameObject.GetComponent<Rigidbody>().AddForce(f);
-                    Debug.Log("Fstatic: "+f.x);
+                    //Debug.Log("Fstatic: "+f.x);
                 }
             }
             else
@@ -57,7 +57,7 @@ public class Brus : MonoBehaviour
                 float xdirect = rb.velocity.normalized.x * -1;
                 Vector3 f = new Vector3(xdirect * Fdinamic, 0, 0);
                 gameObject.GetComponent<Rigidbody>().AddForce(f);
-                Debug.Log("Fdinamic: " + f.x);
+                //Debug.Log("Fdinamic: " + f.x);
             }
         }
         else if (stop)

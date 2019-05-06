@@ -32,17 +32,19 @@ public class Dinamometer : MonoBehaviour
 
     public void ToStation()
     {
+        //print(spr.transform.localScale.y);
         state = 1;
         this.gameObject.transform.position = stationpos;
         defposzost = ost.transform.localPosition.z;
-        defscaleyspr = spr.transform.localScale.y;
+        //print(defscaleyspr);
+        
     }
 
 
     public GameObject ost;
     public GameObject spr;
     float defposzost;
-    float defscaleyspr;
+    float defscaleyspr = 10;
     public void ShowForce(float f)
     {
         Vector3 temp = ost.transform.localPosition;
