@@ -16,6 +16,8 @@ public class Controller2 : MonoBehaviour
     public Vector3 temp_force;
     public float temp_vel;
     public float temp_time;
+
+    public GameObject help_panel;
     // Start is called before the first frame update
     void Start()
     {
@@ -30,30 +32,29 @@ public class Controller2 : MonoBehaviour
             switch (state)
             {
                 case 0:
-                    brus.ToWeighter();
+                    brus.ToWeighter(); //переміщення бруса на ваги
                     brus.stop = false;
-                    dinam.ToDef();
-                    StartCoroutine(Wait(1));
+                    StartCoroutine(Wait(1)); // Виклик затримки виконання програми
                     state = 1;
                     break;
-                case 1:
-                    canvas.gsweighter = (Math.Round(brus.mass * 9.8f, 2)).ToString();
+                case 1: // виведення результатів вимірювань на екран
+                    canvas.gsweighter = (Math.Round(brus.mass * 9.8f, 2)).ToString(); 
                     canvas.gs_w_res = (Math.Round(brus.mass * 9.8f, 2)).ToString();
                     StartCoroutine(Wait(2));
                     state = 2;
                     break;
                 case 2:
-                    brus.ToStation();
+                    brus.ToStation(); // Переміщення брусу на desk
                     StartCoroutine(Wait(1));
                     state = 3;
                     break;
                 case 3:
-                    dinam.ToStation();
+                    dinam.ToStation();// Закріплення дінамометра
                     temp_force = Vector3.zero;
                     StartCoroutine(Wait(1));
                     state = 4;
                     break;
-                case 4:
+                case 4: // Додавання сили до тіла доки воно не зрушить з місця
                     float x = Mathf.Abs(brus.gameObject.transform.position.x - brus.stationpos.x);
                     dinam.gameObject.transform.position = new Vector3(dinam.stationpos.x + x, dinam.gameObject.transform.position.y, dinam.gameObject.transform.position.z);
                     temp_force.x = temp_force.x + 0.002f;
@@ -69,7 +70,7 @@ public class Controller2 : MonoBehaviour
                     }
 
                     break;
-                case 5:
+                case 5: // Віднімання сили доки тіло не почне рухатись рівномірно(швидкість не стане меншою або рівною тій що була на попередньому році
                     x = Mathf.Abs(brus.gameObject.transform.position.x - brus.stationpos.x);
                     dinam.gameObject.transform.position = new Vector3(dinam.stationpos.x + x, dinam.gameObject.transform.position.y, dinam.gameObject.transform.position.z);
                     temp_force.x = temp_force.x - 0.002f;
@@ -77,7 +78,7 @@ public class Controller2 : MonoBehaviour
                     brus.GetComponent<Rigidbody>().AddForce(temp_force);
                     brus.fsum = temp_force;
                     dinam.ShowForce(temp_force.x);
-                    if (Mathf.Abs(brus.rb.velocity.x) < temp_vel)
+                    if (Mathf.Abs(brus.rb.velocity.x) <= temp_vel)
                     {
                         canvas.gs_d_res = Math.Round(temp_force.x, 2).ToString();
                         temp_vel = Mathf.Abs(brus.rb.velocity.x);
@@ -86,7 +87,7 @@ public class Controller2 : MonoBehaviour
                     }
                     temp_vel = Mathf.Abs(brus.rb.velocity.x);
                     break;
-                case 6:
+                case 6: // рівномірно рухаємо тіло 2 секунди
                     x = Mathf.Abs(brus.gameObject.transform.position.x - brus.stationpos.x);
                     dinam.gameObject.transform.position = new Vector3(dinam.stationpos.x + x, dinam.gameObject.transform.position.y, dinam.gameObject.transform.position.z);
                     brus.GetComponent<Rigidbody>().AddForce(temp_force);
@@ -118,6 +119,7 @@ public class Controller2 : MonoBehaviour
     {
         started = true;
         state = 0;
+        dinam.ToDef();
         brus.Kdinamic = float.Parse(canvas.gs_kd_input);
         brus.Kstatic = float.Parse(canvas.gs_ks_input);
         brus.mass = float.Parse(canvas.gs_mass_input);
@@ -133,6 +135,19 @@ public class Controller2 : MonoBehaviour
         brus.fsum = Vector3.zero;
         brus.ToDef();
         dinam.ToDef();
+    }
+
+    public void help_button()
+    {
+        bool active = help_panel.activeSelf;
+        if (active)
+        {
+            help_panel.SetActive(false);
+        }
+        else
+        {
+            help_panel.SetActive(true);
+        }
     }
     GameObject GetRaycastObj()
     {
