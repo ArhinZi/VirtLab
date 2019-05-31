@@ -33,6 +33,7 @@ public class Brus : MonoBehaviour
     private void FixedUpdate()
     {
         rb.AddForce(Vector3.down*mass*9.8f);
+        //Debug.Log("Added " + Vector3.down * mass * 9.8f);
         //if(rb.velocity.x < 0)
         //{
         //    rb.velocity = Vector3.zero;
@@ -48,6 +49,7 @@ public class Brus : MonoBehaviour
                 {
                     Vector3 f = new Vector3((fsum.x ) * -1,0,0);
                     gameObject.GetComponent<Rigidbody>().AddForce(f);
+                    //Debug.Log("Added0 "+ f);
                 }
             }
             else
@@ -55,6 +57,7 @@ public class Brus : MonoBehaviour
                 float xdirect = rb.velocity.normalized.x * -1;
                 Vector3 f = new Vector3(xdirect * Fdinamic, 0, 0);
                 gameObject.GetComponent<Rigidbody>().AddForce(f);
+                //Debug.Log("Added1 " + f);
             }
         }
         else if (stop)

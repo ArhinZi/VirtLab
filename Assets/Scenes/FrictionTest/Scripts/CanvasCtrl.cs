@@ -11,6 +11,10 @@ public class CanvasCtrl : MonoBehaviour
     public Text kd_input;
     public Text mass_input;
 
+    public InputField ks_if;
+    public InputField kd_if;
+    public InputField mass_if;
+
     public Text w_res;
     public Text s_res;
     public Text d_res;
@@ -35,12 +39,20 @@ public class CanvasCtrl : MonoBehaviour
         {
             return ks_input.text;
         }
+        set
+        {
+            ks_input.text = value;
+        }
     }
     public string gs_kd_input
     {
         get
         {
             return kd_input.text;
+        }
+        set
+        {
+            kd_input.text = value;
         }
     }
     public string gs_mass_input

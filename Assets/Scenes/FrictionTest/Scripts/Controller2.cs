@@ -38,8 +38,8 @@ public class Controller2 : MonoBehaviour
                     state = 1;
                     break;
                 case 1: // виведення результатів вимірювань на екран
-                    canvas.gsweighter = (Math.Round(brus.mass * 9.8f, 2)).ToString(); 
-                    canvas.gs_w_res = (Math.Round(brus.mass * 9.8f, 2)).ToString();
+                    canvas.gsweighter = (Math.Round(brus.mass * 9.8f, 2)).ToString() + " H"; 
+                    canvas.gs_w_res = (Math.Round(brus.mass * 9.8f, 2)).ToString() + " H";
                     StartCoroutine(Wait(2));
                     state = 2;
                     break;
@@ -58,13 +58,13 @@ public class Controller2 : MonoBehaviour
                     float x = Mathf.Abs(brus.gameObject.transform.position.x - brus.stationpos.x);
                     dinam.gameObject.transform.position = new Vector3(dinam.stationpos.x + x, dinam.gameObject.transform.position.y, dinam.gameObject.transform.position.z);
                     temp_force.x = temp_force.x + 0.002f;
-                    canvas.gsdinamometr = Math.Round(temp_force.x,2).ToString();
+                    canvas.gsdinamometr = Math.Round(temp_force.x,2).ToString() + " H";
                     brus.GetComponent<Rigidbody>().AddForce(temp_force);
                     brus.fsum = temp_force;
                     dinam.ShowForce(temp_force.x);
                     if (Mathf.Abs(brus.rb.velocity.x) > 0.1f)
                     {
-                        canvas.gs_s_res = Math.Round(temp_force.x, 2).ToString();
+                        canvas.gs_s_res = Math.Round(temp_force.x, 2).ToString() + " H";
                         temp_vel = Mathf.Abs(brus.rb.velocity.x);
                         state = 5;
                     }
@@ -74,13 +74,13 @@ public class Controller2 : MonoBehaviour
                     x = Mathf.Abs(brus.gameObject.transform.position.x - brus.stationpos.x);
                     dinam.gameObject.transform.position = new Vector3(dinam.stationpos.x + x, dinam.gameObject.transform.position.y, dinam.gameObject.transform.position.z);
                     temp_force.x = temp_force.x - 0.002f;
-                    canvas.gsdinamometr = Math.Round(temp_force.x, 2).ToString();
+                    canvas.gsdinamometr = Math.Round(temp_force.x, 2).ToString() + " H";
                     brus.GetComponent<Rigidbody>().AddForce(temp_force);
                     brus.fsum = temp_force;
                     dinam.ShowForce(temp_force.x);
                     if (Mathf.Abs(brus.rb.velocity.x) <= temp_vel)
                     {
-                        canvas.gs_d_res = Math.Round(temp_force.x, 2).ToString();
+                        canvas.gs_d_res = Math.Round(temp_force.x, 2).ToString() + " H";
                         temp_vel = Mathf.Abs(brus.rb.velocity.x);
                         state = 6;
                         temp_time = Time.time;
@@ -102,6 +102,10 @@ public class Controller2 : MonoBehaviour
                     break;
                 case 7:
                     dinam.ShowForce(0);
+
+                    canvas.ks_if.interactable = true;
+                    canvas.kd_if.interactable = true;
+                    canvas.mass_if.interactable = true;
                     break;
                 default:
                     break;
@@ -123,6 +127,10 @@ public class Controller2 : MonoBehaviour
         brus.Kdinamic = float.Parse(canvas.gs_kd_input);
         brus.Kstatic = float.Parse(canvas.gs_ks_input);
         brus.mass = float.Parse(canvas.gs_mass_input);
+
+        canvas.ks_if.interactable = false;
+        canvas.kd_if.interactable = false;
+        canvas.mass_if.interactable = false;
 
         brus.fsum = Vector3.zero;
         dinam.ShowForce(0);
@@ -149,6 +157,42 @@ public class Controller2 : MonoBehaviour
             help_panel.SetActive(true);
         }
     }
+
+    public void Set_button(string str)
+    {
+        float s = 0;
+        float d = 0;
+
+        switch (str)
+        {
+            case "1":
+                s = 0.1f;
+                d = 0.07f;
+                break;
+            case "2":
+                s = 0.54f;
+                d = 0.32f;
+                break;
+            case "3":
+                s = 0.8f;
+                d = 0.53f;
+                break;
+            case "4":
+                s = 1.1f;
+                d = 0.15f;
+                break;
+            case "5":
+                s = 1;
+                d = 0.4f;
+                break;
+            default:
+                break;
+        }
+        Debug.Log("set "+s+" "+d);
+        canvas.ks_if.text = s.ToString();
+        canvas.kd_if.text = d.ToString();
+    }
+
     GameObject GetRaycastObj()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
