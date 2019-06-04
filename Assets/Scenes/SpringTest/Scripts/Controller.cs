@@ -17,9 +17,13 @@ public class Controller : MonoBehaviour
     public Vector3 spring_target_pos;
     public Vector3 spring_target_scale;
 
-    public float deform_koeff;
-    public float pos_koeff;
-    public float cyl_koeff;
+    public float spring_mult;
+    public float cylin_mult;
+
+    public float zat_k;
+    public float amplitude = 0;
+
+    float time = 0;
 
     private void Start()
     {
@@ -43,30 +47,31 @@ public class Controller : MonoBehaviour
                     }
                     break;
                 case 1:
+                    amplitude = (mass * 9.8f / koeff);
+                    float w0 = Mathf.Sqrt(koeff/mass);
+                    float zat = Mathf.Pow(2.71828f, -1 * zat_k * time);
                     
-                    direction = spring.def_pos;
-                    direction.y = spring.def_pos.y - pos_koeff * mass / koeff / 2;
-                    Vector3 scale = spring.def_scale;
-                    scale.y = scale.y + deform_koeff * mass / koeff;
+                    float delta = amplitude + amplitude * zat * Mathf.Cos(w0/2*time + Mathf.PI);
 
-                    Vector3 cyl_direction = cylin.basepos;
-                    cyl_direction.y = cyl_direction.y - cyl_koeff * mass / koeff;
-                    spring.transform.position = Vector3.MoveTowards(spring.transform.position, direction, 0.01f);
-                    spring.transform.localScale = Vector3.MoveTowards(spring.transform.localScale, scale, 0.4f);
-                    cylin.transform.position = Vector3.MoveTowards(cylin.transform.position, cyl_direction, 0.01f);
-                    if (cylin.transform.position == cyl_direction)
+                    cylin.transform.position = new Vector3(cylin.basepos.x, cylin.basepos.y + (cylin_mult * delta), cylin.basepos.z);
+                    spring.transform.localScale = new Vector3(spring.def_scale.x, spring.def_scale.y + (spring_mult * delta), spring.def_scale.z);
+
+                    time += Time.deltaTime;
+                    print(zat);
+                    if (zat < 0.0001)
                     {
                         state = 2;
                     }
                     break;
                 case 2:
-                    canvas.linear.text = Math.Round((canvas.def_linear + (mass*9.8/koeff)), 3).ToString();
+                    canvas.linear.text = Math.Round(canvas.def_linear + amplitude,3).ToString();
                     break;
                 default:
                     break;
             }
         }
     }
+
     IEnumerator Wait(int secs)
     {
         pause = true;
@@ -93,6 +98,7 @@ public class Controller : MonoBehaviour
         canvas.mass.interactable = true;
         canvas.koeff.interactable = true;
         canvas.start_button.interactable = true;
+        time = 0;
     }
 
     void OnGUI()
