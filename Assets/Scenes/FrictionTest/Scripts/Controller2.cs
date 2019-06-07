@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using UnityEngine;
 
 public class Controller2 : MonoBehaviour
 {
     public bool started = false;
     public bool pause = false;
+    public bool pause2 = false;
     public int state = 0;
+    public bool stepper = false;
 
     public Brus brus;
     public Dinamometer dinam;
@@ -18,20 +21,24 @@ public class Controller2 : MonoBehaviour
     public float temp_time;
 
     public GameObject help_panel;
+    public HelpCtrl helpctrl;
     // Start is called before the first frame update
     void Start()
     {
         //StartCoroutine(Wait());
+        
     }
 
     // Update is called once per frame
     public void FixedUpdate()
     {
-        if (started && !pause)
+        if (started && !pause && !pause2)
         {
             switch (state)
             {
                 case 0:
+                    canvas.gsweighter = "0 H";
+                    canvas.gsdinamometr = "0 H";
                     brus.ToWeighter(); //переміщення бруса на ваги
                     brus.stop = false;
                     StartCoroutine(Wait(1)); // Виклик затримки виконання програми
@@ -41,6 +48,7 @@ public class Controller2 : MonoBehaviour
                     canvas.gsweighter = (Math.Round(brus.mass * 9.8f, 2)).ToString() + " H"; 
                     canvas.gs_w_res = (Math.Round(brus.mass * 9.8f, 2)).ToString() + " H";
                     StartCoroutine(Wait(2));
+                    if (stepper) pause_button();
                     state = 2;
                     break;
                 case 2:
@@ -50,8 +58,8 @@ public class Controller2 : MonoBehaviour
                     break;
                 case 3:
                     dinam.ToStation();// Закріплення дінамометра
-                    temp_force = Vector3.zero;
                     StartCoroutine(Wait(1));
+                    if (stepper) pause_button();
                     state = 4;
                     break;
                 case 4: // Додавання сили до тіла доки воно не зрушить з місця
@@ -66,6 +74,7 @@ public class Controller2 : MonoBehaviour
                     {
                         canvas.gs_s_res = Math.Round(temp_force.x, 2).ToString() + " H";
                         temp_vel = Mathf.Abs(brus.rb.velocity.x);
+                        if (stepper) pause_button();
                         state = 5;
                     }
 
@@ -121,12 +130,15 @@ public class Controller2 : MonoBehaviour
 
     public void start_button()
     {
+        pause2 = false;
+        Time.timeScale = 1;
+        temp_force = Vector3.zero;
         started = true;
         state = 0;
         dinam.ToDef();
-        brus.Kdinamic = float.Parse(canvas.gs_kd_input);
-        brus.Kstatic = float.Parse(canvas.gs_ks_input);
-        brus.mass = float.Parse(canvas.gs_mass_input);
+        brus.Kdinamic = float.Parse(canvas.gs_kd_input, CultureInfo.InvariantCulture);
+        brus.Kstatic = float.Parse(canvas.gs_ks_input, CultureInfo.InvariantCulture);
+        brus.mass = float.Parse(canvas.gs_mass_input, CultureInfo.InvariantCulture);
 
         canvas.ks_if.interactable = false;
         canvas.kd_if.interactable = false;
@@ -137,12 +149,19 @@ public class Controller2 : MonoBehaviour
     }
     public void reset()
     {
+        pause2 = false;
+        Time.timeScale = 1;
+
         started = false;
         state = -1;
         dinam.ShowForce(0);
         brus.fsum = Vector3.zero;
         brus.ToDef();
         dinam.ToDef();
+
+        canvas.ks_if.interactable = true;
+        canvas.kd_if.interactable = true;
+        canvas.mass_if.interactable = true;
     }
 
     public void help_button()
@@ -158,6 +177,29 @@ public class Controller2 : MonoBehaviour
         }
     }
 
+    public void pause_button()
+    {
+        if (pause2)
+        {
+            pause2 = false;
+            stepper = false;
+            Time.timeScale = 1;
+        }
+        else
+        {
+            pause2 = true;
+            Time.timeScale = 0;
+        }
+    }
+
+    public void next_button()
+    {
+        if (!started) start_button();
+        pause2 = false;
+        Time.timeScale = 1;
+        stepper = true;
+    }
+
     public void Set_button(string str)
     {
         float s = 0;
@@ -166,24 +208,24 @@ public class Controller2 : MonoBehaviour
         switch (str)
         {
             case "1":
-                s = 0.1f;
-                d = 0.07f;
+                s = float.Parse(helpctrl.if11.text, CultureInfo.InvariantCulture);
+                d = float.Parse(helpctrl.if21.text, CultureInfo.InvariantCulture);
                 break;
             case "2":
-                s = 0.54f;
-                d = 0.32f;
+                s = float.Parse(helpctrl.if12.text, CultureInfo.InvariantCulture);
+                d = float.Parse(helpctrl.if22.text, CultureInfo.InvariantCulture);
                 break;
             case "3":
-                s = 0.8f;
-                d = 0.53f;
+                s = float.Parse(helpctrl.if13.text, CultureInfo.InvariantCulture);
+                d = float.Parse(helpctrl.if23.text, CultureInfo.InvariantCulture);
                 break;
             case "4":
-                s = 1.1f;
-                d = 0.15f;
+                s = float.Parse(helpctrl.if14.text, CultureInfo.InvariantCulture);
+                d = float.Parse(helpctrl.if24.text, CultureInfo.InvariantCulture);
                 break;
             case "5":
-                s = 1;
-                d = 0.4f;
+                s = float.Parse(helpctrl.if15.text, CultureInfo.InvariantCulture);
+                d = float.Parse(helpctrl.if25.text, CultureInfo.InvariantCulture);
                 break;
             default:
                 break;

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = System.Random;
 
 public class Controller : MonoBehaviour
 {
@@ -23,17 +24,21 @@ public class Controller : MonoBehaviour
     public float zat_k;
     public float amplitude = 0;
 
+    public float mass;
+    public float koeff;
+
     float time = 0;
 
     private void Start()
     {
         canvas.linear.text = Math.Round(canvas.def_linear,3).ToString();
+        set_rand();
+        mass = float.Parse(canvas.mass.text);
     }
     // Update is called once per frame
     public void FixedUpdate()
     {
-        float koeff = float.Parse(canvas.koeff.text);
-        float mass = float.Parse(canvas.mass.text);
+        
         if (started && !pause)
         {
             switch (state)
@@ -57,7 +62,6 @@ public class Controller : MonoBehaviour
                     spring.transform.localScale = new Vector3(spring.def_scale.x, spring.def_scale.y + (spring_mult * delta), spring.def_scale.z);
 
                     time += Time.deltaTime;
-                    print(zat);
                     if (zat < 0.0001)
                     {
                         state = 2;
@@ -65,6 +69,8 @@ public class Controller : MonoBehaviour
                     break;
                 case 2:
                     canvas.linear.text = Math.Round(canvas.def_linear + amplitude,3).ToString();
+                    canvas.koeff.text = Math.Round(koeff, 3).ToString();
+                    state = 3;
                     break;
                 default:
                     break;
@@ -84,7 +90,7 @@ public class Controller : MonoBehaviour
         started = true;
         state = 0;
         canvas.mass.interactable = false;
-        canvas.koeff.interactable = false;
+        //canvas.koeff.interactable = false;
         canvas.start_button.interactable = false;
     }
     public void reset()
@@ -96,9 +102,17 @@ public class Controller : MonoBehaviour
         cylin.transform.position = cylin.defpos;
         canvas.linear.text = Math.Round(canvas.def_linear, 3).ToString();
         canvas.mass.interactable = true;
-        canvas.koeff.interactable = true;
+        //canvas.koeff.interactable = true;
         canvas.start_button.interactable = true;
         time = 0;
+    }
+
+    public void set_rand()
+    {
+        int min = int.Parse(canvas.mink.text);
+        int max = int.Parse(canvas.maxk.text);
+        Random rand = new Random();
+        koeff = rand.Next(min, max);
     }
 
     void OnGUI()
